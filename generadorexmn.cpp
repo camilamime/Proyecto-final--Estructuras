@@ -1,5 +1,4 @@
 //Proyecto final :)
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -226,7 +225,7 @@ int cargar_examen(ListaReactivos *lista, const char *nombre)
     return 1;
 }
 
-/* Guarda la lista en el archivo con el formato especificado */
+//Guarda la lista en el archivo con el formato especificado
 void guardar_examen(ListaReactivos *lista, const char *nombre)
 {
     char ruta[MAX_NOMBRE + 8];
@@ -254,10 +253,7 @@ void guardar_examen(ListaReactivos *lista, const char *nombre)
     printf("  Examen guardado en '%s' (%d reactivo(s)).\n", ruta, lista->total);
 }
 
-/* ============================================================
-   IMPLEMENTACIÓN – Utilidades de pantalla
-   ============================================================ */
-
+//IMPLEMENTACIÓN – Utilidades de pantalla
 void limpiar_pantalla(void)
 {
 #ifdef _WIN32
@@ -290,10 +286,7 @@ char pedir_navegacion(void)
     return (char)tolower((unsigned char)buf[0]);
 }
 
-/* ============================================================
-   EDICIÓN de un reactivo
-   ============================================================ */
-
+  //EDICIÓN de un reactivo
 void editar_reactivo(Reactivo *r)
 {
     char buf[MAX_TEXTO];
@@ -333,7 +326,7 @@ void mostrar_reactivo_edicion(ListaReactivos *lista, int num)
     Reactivo *r = lista->actual;
     if (!r) { printf("  (Sin reactivos)\n"); return; }
 
-    printf("\n  ========= Reactivo %d / %d =========\n", num, lista->total);
+    printf("\n  ----- Reactivo %d / %d -----\n", num, lista->total);
     printf("  P: %s\n\n", r->pregunta);
     for (int i = 0; i < 4; i++)
         printf("  op%d: %s\n", i+1, r->opcion[i]);
@@ -346,7 +339,7 @@ void mostrar_reactivo_quiz(ListaReactivos *lista, int num, int total)
     Reactivo *r = lista->actual;
     if (!r) return;
 
-    printf("\n  ======= Pregunta %d de %d =======\n\n", num, total);
+    printf("\n  ----- Pregunta %d de %d -----\n\n", num, total);
     printf("  %s\n\n", r->pregunta);
     for (int i = 0; i < 4; i++) {
         char marca = (r->respuesta_usuario == i+1) ? '*' : ' ';
@@ -360,15 +353,12 @@ void mostrar_reactivo_quiz(ListaReactivos *lista, int num, int total)
     printf("\n  [A]nterior  [D]erecha  [1-4] Responder  [F]inalizar\n");
 }
 
-/* ============================================================
-   FLUJOS PRINCIPALES
-   ============================================================ */
-
-/* ---- GENERAR EXAMEN ---- */
+   //FLUJOS PRINCIPALES
+//Para generar el examen
 void flujo_generar(void)
 {
     limpiar_pantalla();
-    printf("\n  ===== GENERAR EXAMEN =====\n");
+    printf("\n  ----- GENERAR EXAMEN -----\n");
     printf("  Nombre del nuevo examen (sin .txt): ");
 
     char nombre[MAX_NOMBRE];
@@ -456,7 +446,7 @@ void flujo_generar(void)
     destruir_lista(lista);
 }
 
-/* ---- MODIFICAR EXAMEN ---- */
+//Modificar el examen
 void flujo_modificar(void)
 {
     limpiar_pantalla();
@@ -540,7 +530,7 @@ void flujo_modificar(void)
     destruir_lista(lista);
 }
 
-/* ---- APLICAR EXAMEN ---- */
+//Para aplicar el examen
 void flujo_aplicar(void)
 {
     limpiar_pantalla();
@@ -600,11 +590,9 @@ void flujo_aplicar(void)
 
     } while (!finalizar);
 
-    /* ---- Calificación ---- */
+    //Calificacion 
     limpiar_pantalla();
-    printf("\n  =========================================\n");
-    printf("         RESULTADOS DEL EXAMEN\n");
-    printf("  =========================================\n\n");
+    printf("    RESULTADOS DEL EXAMEN \n\n");
 
     float puntos_logrados = 0.0f;
     int   num_r = 0;
@@ -654,14 +642,12 @@ void menu_principal(void)
     do {
         limpiar_pantalla();
         printf("\n");
-        printf("  ============================================\n");
         printf("           GENERADOR DE EXAMENES            \n");
-        printf("  ============================================\n");
-        printf("   1. Generar un examen\n");
-        printf("   2. Modificar un examen\n");
-        printf("   3. Aplicar un examen\n");
-        printf("   4. Salir\n");
-        printf("  ============================================\n");
+        printf("  ------------------------------------------\n");
+        printf("   Generar un examen......1\n");
+        printf("   Modificar un examen....2\n");
+        printf("   Aplicar un examen......3\n");
+        printf("   Salir..................4\n");
         printf("   Elige una opcion: ");
 
         fgets(buf, sizeof(buf), stdin);
