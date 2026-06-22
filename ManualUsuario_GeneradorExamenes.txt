@@ -1,6 +1,6 @@
 Manual de usuario
 
-1. INTRODUCCION
+1. Resumen/Introducción
 
 El Generador de Examenes es una aplicacion de consola
 desarrollada en lenguaje C que permite crear, modificar y
@@ -9,14 +9,14 @@ memoria dinamica y listas doblemente enlazadas para el
 manejo eficiente de los reactivos.
 
 
-2. REQUISITOS DEL SISTEMA
+2. Requisitos 
 
 Compilador necesario:
   - Linux / macOS : GCC (preinstalado en la mayoria de distros)
   - Windows       : MinGW-w64 o WSL
 
 
-3. MENU PRINCIPAL
+3. Menu 
 
 Al ejecutar el programa aparece el siguiente menu:
 
@@ -32,7 +32,7 @@ Al ejecutar el programa aparece el siguiente menu:
 Escribe el numero de la opcion deseada y presiona Enter.
 
 
-4. GENERAR UN EXAMEN
+4. Generar examen
 
 Permite crear un nuevo examen desde cero.
 
@@ -53,7 +53,7 @@ Controles en modo edicion:
   S  ->  Salir (pregunta si deseas guardar antes)
 
 
-5. MODIFICAR UN EXAMEN
+5. Modificar examen
 
 Permite cargar un examen existente y editar sus reactivos.
 
@@ -72,7 +72,7 @@ Controles en modo modificacion:
   G  ->  Guardar cambios en el archivo .txt
   S  ->  Salir (pregunta si deseas guardar antes)
 
-6. APLICAR UN EXAMEN
+6. Aplicar examen
 
 Permite contestar un examen ya creado y obtener la
 calificacion al finalizar.
@@ -101,7 +101,7 @@ Pantalla de resultados:
     PORCENTAJE: 77.8%
 
 
-7. FORMATO DEL ARCHIVO DE EXAMEN
+7. Formato de archivo
 
 Los archivos son de texto plano (.txt). Cada reactivo
 sigue este formato exacto:
