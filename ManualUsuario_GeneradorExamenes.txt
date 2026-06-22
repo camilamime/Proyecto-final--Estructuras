@@ -1,11 +1,7 @@
-============================================================
-          GENERADOR DE EXAMENES - MANUAL DE USUARIO
-               Aplicacion en lenguaje C v1.0
-============================================================
+Manual de usuario
 
-------------------------------------------------------------
 1. INTRODUCCION
-------------------------------------------------------------
+
 El Generador de Examenes es una aplicacion de consola
 desarrollada en lenguaje C que permite crear, modificar y
 aplicar examenes de opcion multiple. Utiliza estructuras,
@@ -13,27 +9,15 @@ memoria dinamica y listas doblemente enlazadas para el
 manejo eficiente de los reactivos.
 
 
-------------------------------------------------------------
 2. REQUISITOS DEL SISTEMA
-------------------------------------------------------------
+
 Compilador necesario:
   - Linux / macOS : GCC (preinstalado en la mayoria de distros)
   - Windows       : MinGW-w64 o WSL
 
-Compilacion y ejecucion:
 
-  Archivo .c (recomendado):
-    gcc -Wall -o generadorexmn generadorexmn.c
-    ./generadorexmn          (Linux/Mac)
-    generadorexmn.exe        (Windows)
-
-  Archivo .cpp:
-    g++ -Wall -o generadorexmn generadorexmn.cpp
-
-
-------------------------------------------------------------
 3. MENU PRINCIPAL
-------------------------------------------------------------
+
 Al ejecutar el programa aparece el siguiente menu:
 
   ============================================
@@ -48,9 +32,8 @@ Al ejecutar el programa aparece el siguiente menu:
 Escribe el numero de la opcion deseada y presiona Enter.
 
 
-------------------------------------------------------------
 4. GENERAR UN EXAMEN
-------------------------------------------------------------
+
 Permite crear un nuevo examen desde cero.
 
 Pasos:
@@ -70,9 +53,8 @@ Controles en modo edicion:
   S  ->  Salir (pregunta si deseas guardar antes)
 
 
-------------------------------------------------------------
 5. MODIFICAR UN EXAMEN
-------------------------------------------------------------
+
 Permite cargar un examen existente y editar sus reactivos.
 
 Pasos:
@@ -90,10 +72,8 @@ Controles en modo modificacion:
   G  ->  Guardar cambios en el archivo .txt
   S  ->  Salir (pregunta si deseas guardar antes)
 
-
-------------------------------------------------------------
 6. APLICAR UN EXAMEN
-------------------------------------------------------------
+
 Permite contestar un examen ya creado y obtener la
 calificacion al finalizar.
 
@@ -121,9 +101,8 @@ Pantalla de resultados:
     PORCENTAJE: 77.8%
 
 
-------------------------------------------------------------
 7. FORMATO DEL ARCHIVO DE EXAMEN
-------------------------------------------------------------
+
 Los archivos son de texto plano (.txt). Cada reactivo
 sigue este formato exacto:
 
@@ -152,9 +131,9 @@ Ejemplo completo:
   2.
 
 
-------------------------------------------------------------
-8. NOTAS IMPORTANTES
-------------------------------------------------------------
+
+8. Notas
+
   - Los archivos .txt deben estar en la misma carpeta
     donde se ejecuta el programa.
 
@@ -170,6 +149,3 @@ Ejemplo completo:
   - La calificacion suma los puntos de cada reactivo
     contestado correctamente.
 
-============================================================
-              FIN DEL MANUAL DE USUARIO
-============================================================
