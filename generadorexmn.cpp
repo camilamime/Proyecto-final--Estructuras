@@ -346,7 +346,7 @@ void mostrarreactivoquiz(ListaReactivos *lis, int num, int total)
         printf("  %c [%d] %s\n", marca, i+1, r->opcion[i]);
     }
     if (r->respuser)
-        printf("\n  (Tu respuesta: op%d)\n", r->respuser);
+        printf("\n  (Tu respuesta: op%d) \n ", r->respuser);
     else
         printf("\n  (Sin respuesta)\n");
 
@@ -605,10 +605,10 @@ void flujoaplicar(void)
 
         printf("  [%d] %s\n", numr, cur->pregunta);
         if (resp)
-            printf("      Tu respuesta: op%d (%s)  →  %s\n",
+            printf("      Tu respuesta: op%d (%s)  ->  %s\n",
                    resp,
                    cur->opcion[resp - 1],
-                   acerto ? "CORRECTA ✓" : "INCORRECTA :p");
+                   acerto ? "CORRECTA " : "INCORRECTA :p");
         else
             printf("      Sin respuesta  →  INCORRECTA  :P\n");
 
