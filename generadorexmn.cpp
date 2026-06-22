@@ -1,7 +1,5 @@
 //Proyecto final :)
 #include <stdio.h>
-//Proyecto final :)
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
