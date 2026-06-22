@@ -1,5 +1,7 @@
 //Proyecto final :)
 #include <stdio.h>
+//Proyecto final :)
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -13,7 +15,7 @@ typedef struct Reactivo {
     char opcion[4][MAX_OPCION];   
     int  correcta;                
     float puntos;
-    int  respuesta_usuario;       /* 0 = sin responder        */
+    int  respuser;       /* 0 = sin responder        */
 
     struct Reactivo *anterior;
     struct Reactivo *siguiente;
@@ -21,61 +23,61 @@ typedef struct Reactivo {
 
 
 typedef struct {
-    Reactivo *cabeza;
-    Reactivo *cola;
-    Reactivo *actual;
+    Reactivo *ini;
+    Reactivo *fin;
+    Reactivo *act;
     int       total;
 } ListaReactivos;
 
 /* Lista */
-ListaReactivos *crear_lista(void);
-void            destruir_lista(ListaReactivos *lista);
+ListaReactivos *crearlis(void);
+void            destruirlis(ListaReactivos *lis);
 Reactivo       *crear_reactivo(void);
-void            insertar_al_final(ListaReactivos *lista, Reactivo *r);
-void            eliminar_actual(ListaReactivos *lista);
+void            insertaralfinal(ListaReactivos *lis, Reactivo *r);
+void            eliminaract(ListaReactivos *lis);
 
 /* Archivos */
-void            listar_examenes(void);
-int             cargar_examen(ListaReactivos *lista, const char *nombre);
-void            guardar_examen(ListaReactivos *lista, const char *nombre);
+void            lisrexamenes(void);
+int             cargarexamen(ListaReactivos *lis, const char *nomexam);
+void            guardarexamen(ListaReactivos *lis, const char *nomexam);
 
 /* Menú y flujos */
-void            menu_principal(void);
-void            flujo_generar(void);
-void            flujo_modificar(void);
-void            flujo_aplicar(void);
+void            menuprincipal(void);
+void            flujogenerar(void);
+void            flujomodificar(void);
+void            flujoaplicar(void);
 
 /* Edición de un reactivo */
-void            editar_reactivo(Reactivo *r);
-void            mostrar_reactivo_edicion(ListaReactivos *lista, int num);
-void            mostrar_reactivo_quiz(ListaReactivos *lista, int num, int total);
+void            editarreactivo(Reactivo *r);
+void            mostrarreactivoedicion(ListaReactivos *lis, int num);
+void            mostrarreactivoquiz(ListaReactivos *lis, int num, int total);
 
 /* Utilidades */
-void            limpiar_pantalla(void);
+void            limpiarpantalla(void);
 void            pausar(void);
-void            limpiar_buffer(void);
-char            pedir_navegacion(void);
+void            limpiarbuffer(void);
+char            pedirnavegacion(void);
 
 /* Lista doblemente enlazada*/
 
-ListaReactivos *crear_lista(void)
+ListaReactivos *crearlis(void)
 {
     ListaReactivos *l = (ListaReactivos *)malloc(sizeof(ListaReactivos));
     if (!l) { fprintf(stderr, "Error: sin memoria.\n"); exit(1); }
-    l->cabeza = l->cola = l->actual = NULL;
+    l->ini = l->fin = l->act = NULL;
     l->total = 0;
     return l;
 }
 
-void destruir_lista(ListaReactivos *lista)
+void destruirlis(ListaReactivos *lis)
 {
-    Reactivo *cur = lista->cabeza;
+    Reactivo *cur = lis->ini;
     while (cur) {
         Reactivo *sig = cur->siguiente;
         free(cur);
         cur = sig;
     }
-    free(lista);
+    free(lis);
 }
 
 Reactivo *crear_reactivo(void)
@@ -85,40 +87,40 @@ Reactivo *crear_reactivo(void)
     return r;
 }
 
-void insertar_al_final(ListaReactivos *lista, Reactivo *r)
+void insertaralfinal(ListaReactivos *lis, Reactivo *r)
 {
-    r->anterior  = lista->cola;
+    r->anterior  = lis->fin;
     r->siguiente = NULL;
 
-    if (lista->cola)
-        lista->cola->siguiente = r;
+    if (lis->fin)
+        lis->fin->siguiente = r;
     else
-        lista->cabeza = r;
+        lis->ini = r;
 
-    lista->cola = r;
-    lista->total++;
+    lis->fin = r;
+    lis->total++;
 
-    if (!lista->actual)
-        lista->actual = r;
+    if (!lis->act)
+        lis->act = r;
 }
 
-/* Elimina el nodo 'actual' y avanza al siguiente (o al anterior) */
-void eliminar_actual(ListaReactivos *lista)
+/* Elimina el nodo 'act' y avanza al siguiente (o al anterior) */
+void eliminaract(ListaReactivos *lis)
 {
-    if (!lista->actual) return;
+    if (!lis->act) return;
 
-    Reactivo *r    = lista->actual;
+    Reactivo *r    = lis->act;
     Reactivo *prev = r->anterior;
     Reactivo *next = r->siguiente;
 
     if (prev) prev->siguiente = next;
-    else      lista->cabeza   = next;
+    else      lis->ini   = next;
 
     if (next) next->anterior = prev;
-    else      lista->cola    = prev;
+    else      lis->fin    = prev;
 
-    lista->actual = next ? next : prev;
-    lista->total--;
+    lis->act = next ? next : prev;
+    lis->total--;
     free(r);
 }
 
@@ -126,20 +128,20 @@ void eliminar_actual(ListaReactivos *lista)
    IMPLEMENTACIÓN – Archivos
    ============================================================ */
 
-/* Lista los archivos .txt del directorio actual que sean exámenes */
-void listar_examenes(void)
+/* Lista los archivos .txt del directorio act que sean exámenes */
+void lisrexamenes(void)
 {
     printf("\n  Archivos de examen disponibles (.txt):\n");
-    printf("  (Introduce el nombre sin extension)\n\n");
+    printf("  (Introduce el nomexam sin extension)\n\n");
 
-    /* Usamos popen para listar archivos .txt */
+    /* Usamos popen para lisr archivos .txt */
 #ifdef _WIN32
     FILE *p = popen("dir /b *.txt 2>nul", "r");
 #else
     FILE *p = popen("ls *.txt 2>/dev/null", "r");
 #endif
     if (!p) {
-        printf("  (No se pudieron listar los archivos)\n");
+        printf("  (No se pudieron lisr los archivos)\n");
         return;
     }
     char buf[MAX_NOMBRE];
@@ -165,79 +167,79 @@ void listar_examenes(void)
  *
  * Retorna 1 si tuvo éxito, 0 si falló.
  */
-int cargar_examen(ListaReactivos *lista, const char *nombre)
+int cargarexamen(ListaReactivos *lis, const char *nomexam)
 {
-    char ruta[MAX_NOMBRE + 8];
-    snprintf(ruta, sizeof(ruta), "%s.txt", nombre);
+    char arch[MAX_NOMBRE + 8];
+    snprintf(arch, sizeof(arch), "%s.txt", nomexam);
 
-    FILE *f = fopen(ruta, "r");
+    FILE *f = fopen(arch, "r");
     if (!f) {
-        printf("  Error: no se pudo abrir '%s'.\n", ruta);
+        printf("  Error: no se pudo abrir '%s'.\n", arch);
         return 0;
     }
 
-    char linea[MAX_TEXTO];
+    char cad[MAX_TEXTO];
     Reactivo *r = NULL;
 
-    while (fgets(linea, sizeof(linea), f)) {
-        linea[strcspn(linea, "\r\n")] = '\0';
+    while (fgets(cad, sizeof(cad), f)) {
+        cad[strcspn(cad, "\r\n")] = '\0';
 
-        if (strncmp(linea, ":p;", 3) == 0) {
+        if (strncmp(cad, ":p;", 3) == 0) {
             /* Nuevo reactivo */
             r = crear_reactivo();
-            strncpy(r->pregunta, linea + 3, MAX_TEXTO - 1);
+            strncpy(r->pregunta, cad + 3, MAX_TEXTO - 1);
 
-        } else if (strncmp(linea, ":op1;", 5) == 0 && r) {
-            strncpy(r->opcion[0], linea + 5, MAX_OPCION - 1);
+        } else if (strncmp(cad, ":op1;", 5) == 0 && r) {
+            strncpy(r->opcion[0], cad + 5, MAX_OPCION - 1);
 
-        } else if (strncmp(linea, ":op2;", 5) == 0 && r) {
-            strncpy(r->opcion[1], linea + 5, MAX_OPCION - 1);
+        } else if (strncmp(cad, ":op2;", 5) == 0 && r) {
+            strncpy(r->opcion[1], cad + 5, MAX_OPCION - 1);
 
-        } else if (strncmp(linea, ":op3;", 5) == 0 && r) {
-            strncpy(r->opcion[2], linea + 5, MAX_OPCION - 1);
+        } else if (strncmp(cad, ":op3;", 5) == 0 && r) {
+            strncpy(r->opcion[2], cad + 5, MAX_OPCION - 1);
 
-        } else if (strncmp(linea, ":op4;", 5) == 0 && r) {
-            strncpy(r->opcion[3], linea + 5, MAX_OPCION - 1);
+        } else if (strncmp(cad, ":op4;", 5) == 0 && r) {
+            strncpy(r->opcion[3], cad + 5, MAX_OPCION - 1);
 
-        } else if (strncmp(linea, ":r;", 3) == 0 && r) {
+        } else if (strncmp(cad, ":r;", 3) == 0 && r) {
             /* :r;opN  →  N es el número de la opción correcta */
-            char *ptr = linea + 3;          /* "opN" */
+            char *ptr = cad + 3;          /* "opN" */
             if (strncmp(ptr, "op", 2) == 0)
                 r->correcta = atoi(ptr + 2);
 
-        } else if (r && strlen(linea) > 0 &&
-                   (linea[strlen(linea)-1] == '.' ||
-                    (linea[0] >= '0' && linea[0] <= '9'))) {
+        } else if (r && strlen(cad) > 0 &&
+                   (cad[strlen(cad)-1] == '.' ||
+                    (cad[0] >= '0' && cad[0] <= '9'))) {
             /* Línea de puntos: "NN." */
-            r->puntos = atof(linea);
-            insertar_al_final(lista, r);
+            r->puntos = atof(cad);
+            insertaralfinal(lis, r);
             r = NULL;
         }
     }
     /* Si quedó un reactivo sin línea de puntos (archivo mal terminado) */
     if (r) {
         r->puntos = 1.0f;
-        insertar_al_final(lista, r);
+        insertaralfinal(lis, r);
     }
 
     fclose(f);
-    printf("  Examen '%s' cargado: %d reactivo(s).\n", nombre, lista->total);
+    printf("  Examen '%s' cargado: %d reactivo(s).\n", nomexam, lis->total);
     return 1;
 }
 
-//Guarda la lista en el archivo con el formato especificado
-void guardar_examen(ListaReactivos *lista, const char *nombre)
+//Guarda la lis en el archivo con el formato especificado
+void guardarexamen(ListaReactivos *lis, const char *nomexam)
 {
-    char ruta[MAX_NOMBRE + 8];
-    snprintf(ruta, sizeof(ruta), "%s.txt", nombre);
+    char arch[MAX_NOMBRE + 8];
+    snprintf(arch, sizeof(arch), "%s.txt", nomexam);
 
-    FILE *f = fopen(ruta, "w");
+    FILE *f = fopen(arch, "w");
     if (!f) {
-        printf("  Error: no se pudo guardar '%s'.\n", ruta);
+        printf("  Error: no se pudo guardar '%s'.\n", arch);
         return;
     }
 
-    Reactivo *cur = lista->cabeza;
+    Reactivo *cur = lis->ini;
     while (cur) {
         fprintf(f, ":p;%s\n",   cur->pregunta);
         fprintf(f, ":op1;%s\n", cur->opcion[0]);
@@ -250,11 +252,11 @@ void guardar_examen(ListaReactivos *lista, const char *nombre)
     }
 
     fclose(f);
-    printf("  Examen guardado en '%s' (%d reactivo(s)).\n", ruta, lista->total);
+    printf("  Examen guardado en '%s' (%d reactivo(s)).\n", arch, lis->total);
 }
 
 //IMPLEMENTACIÓN – Utilidades de pantalla
-void limpiar_pantalla(void)
+void limpiarpantalla(void)
 {
 #ifdef _WIN32
     system("cls");
@@ -266,11 +268,11 @@ void limpiar_pantalla(void)
 void pausar(void)
 {
     printf("\n  Presiona ENTER para continuar...");
-    limpiar_buffer();
+    limpiarbuffer();
     getchar();
 }
 
-void limpiar_buffer(void)
+void limpiarbuffer(void)
 {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
@@ -278,7 +280,7 @@ void limpiar_buffer(void)
 
 /* Devuelve 'a'=anterior, 'd'=siguiente, 'q'=salir, 'n'=nuevo,
    'e'=eliminar, 's'=guardar, 'r'=responder */
-char pedir_navegacion(void)
+char pedirnavegacion(void)
 {
     char buf[8];
     printf("\n  [A]nterior  [D]erecha/Siguiente  [N]uevo  [E]liminar  [G]uardar  [S]alir\n  Opcion: ");
@@ -287,66 +289,66 @@ char pedir_navegacion(void)
 }
 
   //EDICIÓN de un reactivo
-void editar_reactivo(Reactivo *r)
+void editarreactivo(Reactivo *r)
 {
     char buf[MAX_TEXTO];
 
     printf("\n  --- Edicion del Reactivo ---\n");
 
-    printf("  Pregunta [actual: %.60s...]\n  > ", r->pregunta);
+    printf("  Pregunta [act: %.60s...]\n  > ", r->pregunta);
     fgets(buf, sizeof(buf), stdin);
     buf[strcspn(buf, "\r\n")] = '\0';
     if (strlen(buf) > 0) strncpy(r->pregunta, buf, MAX_TEXTO - 1);
 
     for (int i = 0; i < 4; i++) {
-        printf("  Opcion %d [actual: %s]\n  > ", i+1, r->opcion[i]);
+        printf("  Opcion %d [act: %s]\n  > ", i+1, r->opcion[i]);
         fgets(buf, sizeof(buf), stdin);
         buf[strcspn(buf, "\r\n")] = '\0';
         if (strlen(buf) > 0) strncpy(r->opcion[i], buf, MAX_OPCION - 1);
     }
 
-    printf("  Respuesta correcta (1-4) [actual: %d]\n  > ", r->correcta);
+    printf("  Respuesta correcta (1-4) [act: %d]\n  > ", r->correcta);
     fgets(buf, sizeof(buf), stdin);
     buf[strcspn(buf, "\r\n")] = '\0';
     int c = atoi(buf);
     if (c >= 1 && c <= 4) r->correcta = c;
 
-    printf("  Puntos [actual: %.1f]\n  > ", r->puntos);
+    printf("  Puntos [act: %.1f]\n  > ", r->puntos);
     fgets(buf, sizeof(buf), stdin);
     buf[strcspn(buf, "\r\n")] = '\0';
     float p = atof(buf);
     if (p > 0) r->puntos = p;
 
-    printf("  Reactivo actualizado.\n");
+    printf("  Reactivo actizado.\n");
 }
 
-/* Muestra el reactivo actual en modo edición */
-void mostrar_reactivo_edicion(ListaReactivos *lista, int num)
+/* Muestra el reactivo act en modo edición */
+void mostrarreactivoedicion(ListaReactivos *lis, int num)
 {
-    Reactivo *r = lista->actual;
+    Reactivo *r = lis->act;
     if (!r) { printf("  (Sin reactivos)\n"); return; }
 
-    printf("\n  ----- Reactivo %d / %d -----\n", num, lista->total);
+    printf("\n  ----- Reactivo %d / %d -----\n", num, lis->total);
     printf("  P: %s\n\n", r->pregunta);
     for (int i = 0; i < 4; i++)
         printf("  op%d: %s\n", i+1, r->opcion[i]);
     printf("\n  Correcta: op%d  |  Puntos: %.1f\n", r->correcta, r->puntos);
 }
 
-/* Muestra el reactivo actual en modo quiz */
-void mostrar_reactivo_quiz(ListaReactivos *lista, int num, int total)
+/* Muestra el reactivo act en modo quiz */
+void mostrarreactivoquiz(ListaReactivos *lis, int num, int total)
 {
-    Reactivo *r = lista->actual;
+    Reactivo *r = lis->act;
     if (!r) return;
 
     printf("\n  ----- Pregunta %d de %d -----\n\n", num, total);
     printf("  %s\n\n", r->pregunta);
     for (int i = 0; i < 4; i++) {
-        char marca = (r->respuesta_usuario == i+1) ? '*' : ' ';
+        char marca = (r->respuser == i+1) ? '*' : ' ';
         printf("  %c [%d] %s\n", marca, i+1, r->opcion[i]);
     }
-    if (r->respuesta_usuario)
-        printf("\n  (Tu respuesta: op%d)\n", r->respuesta_usuario);
+    if (r->respuser)
+        printf("\n  (Tu respuesta: op%d)\n", r->respuser);
     else
         printf("\n  (Sin respuesta)\n");
 
@@ -355,18 +357,18 @@ void mostrar_reactivo_quiz(ListaReactivos *lista, int num, int total)
 
    //FLUJOS PRINCIPALES
 //Para generar el examen
-void flujo_generar(void)
+void flujogenerar(void)
 {
-    limpiar_pantalla();
+    limpiarpantalla();
     printf("\n  ----- GENERAR EXAMEN -----\n");
     printf("  Nombre del nuevo examen (sin .txt): ");
 
-    char nombre[MAX_NOMBRE];
-    fgets(nombre, sizeof(nombre), stdin);
-    nombre[strcspn(nombre, "\r\n")] = '\0';
-    if (strlen(nombre) == 0) return;
+    char nomexam[MAX_NOMBRE];
+    fgets(nomexam, sizeof(nomexam), stdin);
+    nomexam[strcspn(nomexam, "\r\n")] = '\0';
+    if (strlen(nomexam) == 0) return;
 
-    ListaReactivos *lista = crear_lista();
+    ListaReactivos *lis = crearlis();
     int  num = 0;
     char op;
 
@@ -379,26 +381,26 @@ void flujo_generar(void)
     strcpy(r->opcion[3], "Opcion 4");
     r->correcta = 1;
     r->puntos   = 1.0f;
-    insertar_al_final(lista, r);
+    insertaralfinal(lis, r);
     num = 1;
 
-    editar_reactivo(lista->actual);
+    editarreactivo(lis->act);
 
     do {
-        limpiar_pantalla();
-        mostrar_reactivo_edicion(lista, num);
+        limpiarpantalla();
+        mostrarreactivoedicion(lis, num);
 
-        op = pedir_navegacion();
+        op = pedirnavegacion();
 
         if (op == 'a') {
-            if (lista->actual->anterior) {
-                lista->actual = lista->actual->anterior;
+            if (lis->act->anterior) {
+                lis->act = lis->act->anterior;
                 num--;
             } else printf("  Ya estas en el primer reactivo.\n");
 
         } else if (op == 'd') {
-            if (lista->actual->siguiente) {
-                lista->actual = lista->actual->siguiente;
+            if (lis->act->siguiente) {
+                lis->act = lis->act->siguiente;
                 num++;
             } else printf("  Ya estas en el ultimo reactivo.\n");
 
@@ -412,57 +414,57 @@ void flujo_generar(void)
             strcpy(nuevo->opcion[3], "Opcion 4");
             nuevo->correcta = 1;
             nuevo->puntos   = 1.0f;
-            insertar_al_final(lista, nuevo);
+            insertaralfinal(lis, nuevo);
             /* Ir al nuevo */
-            lista->actual = lista->cola;
-            num = lista->total;
-            limpiar_pantalla();
-            editar_reactivo(lista->actual);
+            lis->act = lis->fin;
+            num = lis->total;
+            limpiarpantalla();
+            editarreactivo(lis->act);
 
         } else if (op == 'e') {
-            if (lista->total == 1) {
+            if (lis->total == 1) {
                 printf("  No puedes eliminar el unico reactivo.\n");
                 pausar();
             } else {
-                eliminar_actual(lista);
-                num = (num > lista->total) ? lista->total : num;
+                eliminaract(lis);
+                num = (num > lis->total) ? lis->total : num;
                 printf("  Reactivo eliminado.\n");
                 pausar();
             }
 
         } else if (op == 'g') {
-            guardar_examen(lista, nombre);
+            guardarexamen(lis, nomexam);
             pausar();
 
         } else if (op == 's') {
             printf("  Guardar antes de salir? (s/n): ");
             char yn[4]; fgets(yn, sizeof(yn), stdin);
             if (tolower((unsigned char)yn[0]) == 's')
-                guardar_examen(lista, nombre);
+                guardarexamen(lis, nomexam);
         }
 
     } while (op != 's');
 
-    destruir_lista(lista);
+    destruirlis(lis);
 }
 
 //Modificar el examen
-void flujo_modificar(void)
+void flujomodificar(void)
 {
-    limpiar_pantalla();
+    limpiarpantalla();
     printf("\n  ===== MODIFICAR EXAMEN =====\n");
-    listar_examenes();
+    lisrexamenes();
     printf("  Nombre del examen a modificar (sin .txt): ");
 
-    char nombre[MAX_NOMBRE];
-    fgets(nombre, sizeof(nombre), stdin);
-    nombre[strcspn(nombre, "\r\n")] = '\0';
-    if (strlen(nombre) == 0) return;
+    char nomexam[MAX_NOMBRE];
+    fgets(nomexam, sizeof(nomexam), stdin);
+    nomexam[strcspn(nomexam, "\r\n")] = '\0';
+    if (strlen(nomexam) == 0) return;
 
-    ListaReactivos *lista = crear_lista();
-    if (!cargar_examen(lista, nombre)) {
+    ListaReactivos *lis = crearlis();
+    if (!cargarexamen(lis, nomexam)) {
         pausar();
-        destruir_lista(lista);
+        destruirlis(lis);
         return;
     }
     pausar();
@@ -471,8 +473,8 @@ void flujo_modificar(void)
     char op;
 
     do {
-        limpiar_pantalla();
-        mostrar_reactivo_edicion(lista, num);
+        limpiarpantalla();
+        mostrarreactivoedicion(lis, num);
 
         printf("\n  [A]nterior  [D]siguiente  [N]uevo  [E]ditar  [X]eliminar  [G]uardar  [S]alir\n  Opcion: ");
         char buf[8];
@@ -480,11 +482,11 @@ void flujo_modificar(void)
         op = (char)tolower((unsigned char)buf[0]);
 
         if (op == 'a') {
-            if (lista->actual->anterior) { lista->actual = lista->actual->anterior; num--; }
+            if (lis->act->anterior) { lis->act = lis->act->anterior; num--; }
             else { printf("  Primer reactivo.\n"); pausar(); }
 
         } else if (op == 'd') {
-            if (lista->actual->siguiente) { lista->actual = lista->actual->siguiente; num++; }
+            if (lis->act->siguiente) { lis->act = lis->act->siguiente; num++; }
             else { printf("  Ultimo reactivo.\n"); pausar(); }
 
         } else if (op == 'n') {
@@ -496,89 +498,89 @@ void flujo_modificar(void)
             strcpy(nuevo->opcion[3], "Opcion 4");
             nuevo->correcta = 1;
             nuevo->puntos   = 1.0f;
-            insertar_al_final(lista, nuevo);
-            lista->actual = lista->cola;
-            num = lista->total;
-            limpiar_pantalla();
-            editar_reactivo(lista->actual);
+            insertaralfinal(lis, nuevo);
+            lis->act = lis->fin;
+            num = lis->total;
+            limpiarpantalla();
+            editarreactivo(lis->act);
 
         } else if (op == 'e') {
-            limpiar_pantalla();
-            editar_reactivo(lista->actual);
+            limpiarpantalla();
+            editarreactivo(lis->act);
 
         } else if (op == 'x') {
-            if (lista->total == 1) { printf("  No puedes eliminar el unico reactivo.\n"); pausar(); }
+            if (lis->total == 1) { printf("  No puedes eliminar el unico reactivo.\n"); pausar(); }
             else {
-                eliminar_actual(lista);
-                if (num > lista->total) num = lista->total;
+                eliminaract(lis);
+                if (num > lis->total) num = lis->total;
                 printf("  Reactivo eliminado.\n"); pausar();
             }
 
         } else if (op == 'g') {
-            guardar_examen(lista, nombre);
+            guardarexamen(lis, nomexam);
             pausar();
 
         } else if (op == 's') {
             printf("  Guardar antes de salir? (s/n): ");
             char yn[4]; fgets(yn, sizeof(yn), stdin);
             if (tolower((unsigned char)yn[0]) == 's')
-                guardar_examen(lista, nombre);
+                guardarexamen(lis, nomexam);
         }
 
     } while (op != 's');
 
-    destruir_lista(lista);
+    destruirlis(lis);
 }
 
 //Para aplicar el examen
-void flujo_aplicar(void)
+void flujoaplicar(void)
 {
-    limpiar_pantalla();
+    limpiarpantalla();
     printf("\n  ===== APLICAR EXAMEN =====\n");
-    listar_examenes();
+    lisrexamenes();
     printf("  Nombre del examen a aplicar (sin .txt): ");
 
-    char nombre[MAX_NOMBRE];
-    fgets(nombre, sizeof(nombre), stdin);
-    nombre[strcspn(nombre, "\r\n")] = '\0';
-    if (strlen(nombre) == 0) return;
+    char nomexam[MAX_NOMBRE];
+    fgets(nomexam, sizeof(nomexam), stdin);
+    nomexam[strcspn(nomexam, "\r\n")] = '\0';
+    if (strlen(nomexam) == 0) return;
 
-    ListaReactivos *lista = crear_lista();
-    if (!cargar_examen(lista, nombre)) {
+    ListaReactivos *lis = crearlis();
+    if (!cargarexamen(lis, nomexam)) {
         pausar();
-        destruir_lista(lista);
+        destruirlis(lis);
         return;
     }
 
     /* Calcular total de puntos posibles */
-    float total_puntos = 0.0f;
+    float ptmax = 0.0f;
     {
-        Reactivo *cur = lista->cabeza;
-        while (cur) { total_puntos += cur->puntos; cur = cur->siguiente; }
+        Reactivo *cur = lis->ini;
+        while (cur) { ptmax += cur->puntos; cur = cur->siguiente; }
     }
 
-    lista->actual = lista->cabeza;
+    lis->act = lis->ini;
     int num = 1;
     char buf[8];
     int finalizar = 0;
 
     do {
-        limpiar_pantalla();
-        mostrar_reactivo_quiz(lista, num, lista->total);
+        limpiarpantalla();
+        mostrarreactivoquiz(lis, num, lis->total);
 
         fgets(buf, sizeof(buf), stdin);
         char op = (char)tolower((unsigned char)buf[0]);
 
         if (op == 'a') {
-            if (lista->actual->anterior) { lista->actual = lista->actual->anterior; num--; }
+            if (lis->act->anterior) { lis->act = lis->act->anterior; num--; }
             else { printf("  Estas en la primera pregunta.\n"); pausar(); }
 
         } else if (op == 'd') {
-            if (lista->actual->siguiente) { lista->actual = lista->actual->siguiente; num++; }
+            if (lis->act->siguiente) { lis->act = lis->act->siguiente; num++; }
             else { printf("  Estas en la ultima pregunta.\n"); pausar(); }
 
         } else if (op >= '1' && op <= '4') {
-            lista->actual->respuesta_usuario = op - '0';
+            lis->act->respuser = op - '0';
 
         } else if (op == 'f') {
             /* Confirmar finalización */
@@ -591,56 +593,56 @@ void flujo_aplicar(void)
     } while (!finalizar);
 
     //Calificacion 
-    limpiar_pantalla();
+    limpiarpantalla();
     printf("    RESULTADOS DEL EXAMEN \n\n");
 
-    float puntos_logrados = 0.0f;
-    int   num_r = 0;
-    Reactivo *cur = lista->cabeza;
+    float ptob = 0.0f;
+    int   numr = 0;
+    Reactivo *cur = lis->ini;
 
     while (cur) {
-        num_r++;
-        int respondio   = cur->respuesta_usuario;
-        int es_correcta = (respondio == cur->correcta);
+        numr++;
+        int resp   = cur->respuser;
+        int acerto = (resp == cur->correcta);
 
-        printf("  [%d] %s\n", num_r, cur->pregunta);
-        if (respondio)
+        printf("  [%d] %s\n", numr, cur->pregunta);
+        if (resp)
             printf("      Tu respuesta: op%d (%s)  →  %s\n",
-                   respondio,
-                   cur->opcion[respondio - 1],
-                   es_correcta ? "CORRECTA ✓" : "INCORRECTA ✗");
+                   resp,
+                   cur->opcion[resp - 1],
+                   acerto ? "CORRECTA ✓" : "INCORRECTA :p");
         else
-            printf("      Sin respuesta  →  INCORRECTA ✗\n");
+            printf("      Sin respuesta  →  INCORRECTA  :P\n");
 
         printf("      Respuesta correcta: op%d (%s)  |  Puntos: %.1f\n\n",
                cur->correcta,
                cur->opcion[cur->correcta - 1],
                cur->puntos);
 
-        if (es_correcta)
-            puntos_logrados += cur->puntos;
+        if (acerto)
+            ptob += cur->puntos;
 
         cur = cur->siguiente;
     }
 
     printf("  -----------------------------------------\n");
-    printf("  PUNTAJE: %.1f / %.1f puntos\n", puntos_logrados, total_puntos);
-    if (total_puntos > 0)
-        printf("  PORCENTAJE: %.1f%%\n", (puntos_logrados / total_puntos) * 100.0f);
+    printf("  PUNTAJE: %.1f / %.1f puntos\n", ptob, ptmax);
+    if (ptmax > 0)
+        printf("  PORCENTAJE: %.1f%%\n", (ptob / ptmax) * 100.0f);
     printf("  =========================================\n");
 
     pausar();
-    destruir_lista(lista);
+    destruirlis(lis);
 }
 
 //MENÚ PRINCIPAL
-void menu_principal(void)
+void menuprincipal(void)
 {
     char buf[8];
     int  op;
 
     do {
-        limpiar_pantalla();
+        limpiarpantalla();
         printf("\n");
         printf("           GENERADOR DE EXAMENES            \n");
         printf("  ------------------------------------------\n");
@@ -654,9 +656,9 @@ void menu_principal(void)
         op = atoi(buf);
 
         switch (op) {
-            case 1: flujo_generar();    break;
-            case 2: flujo_modificar();  break;
-            case 3: flujo_aplicar();    break;
+            case 1: flujogenerar();    break;
+            case 2: flujomodificar();  break;
+            case 3: flujoaplicar();    break;
             case 4: printf("\n  Hasta luego!\n\n"); break;
             default:
                 printf("  Opcion no valida.\n");
@@ -668,6 +670,6 @@ void menu_principal(void)
 //main
 int main(void)
 {
-    menu_principal();
+    menuprincipal();
     return 0;
 }
