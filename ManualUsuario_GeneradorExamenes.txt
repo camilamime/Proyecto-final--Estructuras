@@ -1,0 +1,175 @@
+============================================================
+          GENERADOR DE EXAMENES - MANUAL DE USUARIO
+               Aplicacion en lenguaje C v1.0
+============================================================
+
+------------------------------------------------------------
+1. INTRODUCCION
+------------------------------------------------------------
+El Generador de Examenes es una aplicacion de consola
+desarrollada en lenguaje C que permite crear, modificar y
+aplicar examenes de opcion multiple. Utiliza estructuras,
+memoria dinamica y listas doblemente enlazadas para el
+manejo eficiente de los reactivos.
+
+
+------------------------------------------------------------
+2. REQUISITOS DEL SISTEMA
+------------------------------------------------------------
+Compilador necesario:
+  - Linux / macOS : GCC (preinstalado en la mayoria de distros)
+  - Windows       : MinGW-w64 o WSL
+
+Compilacion y ejecucion:
+
+  Archivo .c (recomendado):
+    gcc -Wall -o generadorexmn generadorexmn.c
+    ./generadorexmn          (Linux/Mac)
+    generadorexmn.exe        (Windows)
+
+  Archivo .cpp:
+    g++ -Wall -o generadorexmn generadorexmn.cpp
+
+
+------------------------------------------------------------
+3. MENU PRINCIPAL
+------------------------------------------------------------
+Al ejecutar el programa aparece el siguiente menu:
+
+  ============================================
+           GENERADOR DE EXAMENES
+  ============================================
+   1. Generar un examen
+   2. Modificar un examen
+   3. Aplicar un examen
+   4. Salir
+  ============================================
+
+Escribe el numero de la opcion deseada y presiona Enter.
+
+
+------------------------------------------------------------
+4. GENERAR UN EXAMEN
+------------------------------------------------------------
+Permite crear un nuevo examen desde cero.
+
+Pasos:
+  1. Escribe el nombre del examen (sin extension).
+     Se creara el archivo nombre.txt en la misma carpeta.
+  2. El programa abre un reactivo inicial en blanco.
+  3. Llena cada campo: pregunta, cuatro opciones,
+     numero de respuesta correcta (1-4) y puntos.
+  4. Navega y gestiona reactivos con el menu de edicion.
+
+Controles en modo edicion:
+  A  ->  Ir al reactivo anterior
+  D  ->  Ir al reactivo siguiente
+  N  ->  Crear un nuevo reactivo al final
+  E  ->  Eliminar el reactivo actual
+  G  ->  Guardar el examen en el archivo .txt
+  S  ->  Salir (pregunta si deseas guardar antes)
+
+
+------------------------------------------------------------
+5. MODIFICAR UN EXAMEN
+------------------------------------------------------------
+Permite cargar un examen existente y editar sus reactivos.
+
+Pasos:
+  1. El programa lista los archivos .txt disponibles.
+  2. Escribe el nombre del examen a modificar (sin .txt).
+  3. Se carga el examen en una lista doblemente enlazada.
+  4. Navega por los reactivos y editalos.
+
+Controles en modo modificacion:
+  A  ->  Ir al reactivo anterior
+  D  ->  Ir al reactivo siguiente
+  N  ->  Agregar nuevo reactivo al final
+  E  ->  Editar el reactivo actual (campo por campo)
+  X  ->  Eliminar el reactivo actual
+  G  ->  Guardar cambios en el archivo .txt
+  S  ->  Salir (pregunta si deseas guardar antes)
+
+
+------------------------------------------------------------
+6. APLICAR UN EXAMEN
+------------------------------------------------------------
+Permite contestar un examen ya creado y obtener la
+calificacion al finalizar.
+
+Pasos:
+  1. Selecciona el examen de la lista disponible.
+  2. Se carga el examen y aparece la primera pregunta.
+  3. Navega entre preguntas y responde con los numeros.
+  4. Al finalizar se muestra el resultado completo.
+
+Controles durante el quiz:
+  A      ->  Ir a la pregunta anterior
+  D      ->  Ir a la pregunta siguiente
+  1      ->  Seleccionar opcion 1 como respuesta
+  2      ->  Seleccionar opcion 2 como respuesta
+  3      ->  Seleccionar opcion 3 como respuesta
+  4      ->  Seleccionar opcion 4 como respuesta
+  F      ->  Finalizar el examen y ver resultados
+
+Pantalla de resultados:
+  Por cada pregunta se muestra tu respuesta, si fue
+  correcta o incorrecta, la respuesta correcta y los
+  puntos asignados. Al final aparece el puntaje total:
+
+    PUNTAJE: 3.5 / 4.5 puntos
+    PORCENTAJE: 77.8%
+
+
+------------------------------------------------------------
+7. FORMATO DEL ARCHIVO DE EXAMEN
+------------------------------------------------------------
+Los archivos son de texto plano (.txt). Cada reactivo
+sigue este formato exacto:
+
+  :p;Texto de la pregunta
+  :op1;Primera opcion
+  :op2;Segunda opcion
+  :op3;Tercera opcion
+  :op4;Cuarta opcion
+  :r;op2
+  2.
+
+Donde:
+  :p;       ->  Inicio de una pregunta
+  :op1;     ->  Opciones de respuesta (siempre 4)
+  :r;opN    ->  Opcion correcta (op1, op2, op3 u op4)
+  NN.       ->  Puntos asignados al reactivo (ej. 2. o 1.5)
+
+Ejemplo completo:
+
+  :p;Palabra reservada para llamar metodos de clase sin crear objetos.
+  :op1;final
+  :op2;static
+  :op3;abstract
+  :op4;extends
+  :r;op2
+  2.
+
+
+------------------------------------------------------------
+8. NOTAS IMPORTANTES
+------------------------------------------------------------
+  - Los archivos .txt deben estar en la misma carpeta
+    donde se ejecuta el programa.
+
+  - Si al editar un campo dejas la linea vacia (solo Enter),
+    el valor anterior se conserva sin cambios.
+
+  - No puedes eliminar el unico reactivo de un examen;
+    debe existir al menos uno siempre.
+
+  - Puedes cambiar tu respuesta en el quiz navegando
+    de regreso a una pregunta y presionando otro numero.
+
+  - La calificacion suma los puntos de cada reactivo
+    contestado correctamente.
+
+============================================================
+              FIN DEL MANUAL DE USUARIO
+============================================================
